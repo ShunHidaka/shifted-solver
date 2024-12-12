@@ -3,3 +3,7 @@ http://www.elses.jp/matrix/
 
 shifted CG法は"""正定値"""じゃないといけないことに注意
 必要に応じて固有値を正の方向にシフトさせるなどする
+
+
+MTXファイルからの読み込みは以下のURLから mmread.m をダウンロードすれば実行できる
+https://math.nist.gov/MatrixMarket/mmio/matlab/mmiomatlab.html
