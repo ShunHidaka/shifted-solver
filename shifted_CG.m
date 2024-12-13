@@ -1,26 +1,33 @@
 %
 % shifted CG method by MATLAB
 % First update : 2024/12/12
-% Last update  : 2024/12/12
+% Last update  : 2024/12/13
 % Created by "ShunHidaka (https://github.com/ShunHidaka)"
-% 実数向けに作成しているため内積の計算に注意！複素数用じゃない
+% 実数向けに作成、複素数用ではない
+% SEED SWITCHINGが未実装
 % 引数：
 %   行列A, 右辺ベクトルrhs, 行列サイズN,
 % 　シフトsigma, シフト数M,
 %   最大反復回数max_itr, 閾値threshold
 % 返り値：
-%   近似解x(M行N列)
+%   近似解x（N行M列）
+%   フラグflag
+%   相対残差rres（M行）
+%   収束したときの反復回数itrs（M行）
 %
 
-function x = shifted_CG(A, rhs, N, sigma, M, max_itr, threshold)
+function [x, flag, rres, itrs] = shifted_CG(A, rhs, N, sigma, M, max_itr, threshold)
+    x    = zeros(N, M); % 近似解
+    flag = 1;           % 正常に収束したかどうかを示すフラグ、0なら正常に実行
+    rres = zeros(M, 1); % 各シフト方程式の相対残差
+    itrs = zeros(M, 1); % 収束したときの反復回数
     % 使用する変数の宣言
-    x       = zeros(N, M); % 近似解
     r       = zeros(N, M); % 残差
     p       = zeros(N, M); % 補助ベクトル
     alpha   = zeros(2, M); % alpha_{j-1}, alpha_{j}
-    beta    = zeros(M, 1);
+    beta    = zeros(M, 1); %
     pi      = zeros(3, M); % pi_{j-1}, pi_{j}, pi_{j+1}
-    is_conv = zeros(M, 1);
+    is_conv = zeros(M, 1); % 収束した方程式を管理するベクトル
     Ap      = zeros(N, 1); % 行列ベクトル積で使う一時ベクトル
     rr      = zeros(2, 1); % 演算数を減らすための一時変数 rr_{j-1}, rr_{j}
     % 変数の初期化
@@ -47,7 +54,7 @@ function x = shifted_CG(A, rhs, N, sigma, M, max_itr, threshold)
         r(:,s) = r(:,s) - alpha(2,s)*Ap(:);
         % add方程式の更新
         for m = 1:1:M
-            if is_conv(m) ~= 0 || m == s
+            if is_conv(m) == 1 || m == s
                 continue;
             end
             pi(3,m)    = (1 + (beta(s)/alpha(1,s))*alpha(2,s) + alpha(2,s)*(sigma(m)-sigma(s)))*pi(2,m) - (beta(s)/alpha(1,s))*alpha(2,s)*pi(1,m);
@@ -58,23 +65,29 @@ function x = shifted_CG(A, rhs, N, sigma, M, max_itr, threshold)
             r(:,m) = (1.0/pi(3,m))*r(:,s);
             pi(1,m) = pi(2,m);
             pi(2,m) = pi(3,m);
-            if norm(r(:,m))/r0nrm <= threshold
-                is_conv(m) = j;
+            % add方程式の収束判定
+            rres(m) = norm(r(:,m))/r0nrm;
+            if rres(m) <= threshold
+                is_conv(m) = 1;
+                itrs(m) = j;
                 conv_num = conv_num + 1;
             end
         end
         rr(1) = rr(2);
         rr(2) = dot(r(:,s), r(:,s));
         beta(s) = rr(2)/rr(1);
-        if norm(r(:,s))/r0nrm <= threshold && is_conv(s) == 0
-            is_conv(s) = j;
+        % seed方程式の収束判定
+        rres(s) = norm(r(:,m))/r0nrm;
+        if rres(s) <= threshold && is_conv(s) == 0
+            is_conv(s) = 1;
+            itrs(s) = j;
             conv_num = conv_num + 1;
         end
         % seed switching
 
-        % determine convergence
+        % 全ての方程式が収束したかの判定
         if conv_num == M
+            flag = 0;
             break;
         end
     end
-    j
