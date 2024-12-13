@@ -10,5 +10,5 @@ Solver library for the standard shifted linear systems:
 
 
 ## TODO
-* shifted MINRES法を実装する
+* shifted CG法にseed switchingを実装する
 * ドキュメントを作成する
