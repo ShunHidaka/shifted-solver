@@ -1,12 +1,13 @@
 %
 % sample program for shifted Krylov solver
 % First update : 2024/12/12
-% Last update  : 2024/12/12
+% Last update  : 2024/12/13
 % Created by "ShunHidaka (https://github.com/ShunHidaka)"
 %
 
 % 行列Aの用意
 % https://math.nist.gov/MatrixMarket/mmio/matlab/mmiomatlab.html
+% http://www.damp.tottori-u.ac.jp/~hoshi/elses_matrix/ELSES_MATRIX_VCNT4000std_20130517.tgz
 [A, rows, cols, entries] = mmread("ELSES_MATRIX_VCNT4000std_A.mtx");
 N = rows;
 % シフトsigmaの用意
@@ -23,11 +24,11 @@ max_itr = 100000;
 threshold = 1e-13;
 
 % 解かせる
-x = shifted_CG(A, b, N, sigma, M, max_itr, threshold);
+[x, flag, rres, itrs] = shifted_CG(A, b, N, sigma, M, max_itr, threshold);
 
 % 実行結果の検証
-rel_nrms = zeros(M,1);
+true_res = zeros(M,1);
 for m = 1:1:M
-    r = b - (A + sigma(m)*eye(N))*x(:,m);
-    rel_nrms(m) = norm(r)/norm(b);
+    r = b - (A*x(:,m) + sigma(m)*x(:,m));
+    true_res(m) = norm(r)/norm(b);
 end
