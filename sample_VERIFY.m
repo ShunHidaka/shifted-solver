@@ -14,3 +14,6 @@ threshold = 1e-13;
 
 [x_cg,flag_cg,relres_cg,iter_cg]  = pcg(A+sigma*eye(N), b, threshold, max_itr);
 [x_mr,flag_mr,relres_mr,iter_mr]  = minres(A+sigma*eye(N), b, threshold, max_itr);
+
+[x_my_mr, flag_my_mr, relres_my_mr, iter_my_mr] = shifted_MINRES(A, b, N, sigma, 1, max_itr, threshold);
+[x_my_cg, flag_my_cg, relres_my_cg, iter_my_cg] = shifted_CG(A, b, N, sigma, 1, max_itr, threshold);

@@ -8,14 +8,17 @@
 % 行列Aの用意
 % https://math.nist.gov/MatrixMarket/mmio/matlab/mmiomatlab.html
 % http://www.damp.tottori-u.ac.jp/~hoshi/elses_matrix/ELSES_MATRIX_VCNT4000std_20130517.tgz
-[A, rows, cols, entries] = mmread("ELSES_MATRIX_VCNT4000std_A.mtx");
+%[A, rows, cols, entries] = mmread("ELSES_MATRIX_VCNT4000std_A.mtx");
+%[A, rows, cols, entries] = mmread("ELSES_MATRIX_VCNT900_A.mtx");
+[A, rows, cols, entries] = mmread("ELSES_MATRIX_VCNT900h_A.mtx");
 N = rows;
 % シフトsigmaの用意
-M = 3;
+M = 10;
 sigma = zeros(M, 1);
 for m = 1:1:M
-    % VCNT4000std_Aは正定値でないので最小固有値をシフトさせて正定値にする
-    sigma(m) = 1.0 + 0.001*m;
+    %sigma(m) = 0.5 + 0.001i*m;
+    %sigma(m) = 0.001*m + 0.01i;
+    sigma(m) = 0.0 + 0.01 * exp(1i * 2 * pi * (m+0.5) / M);
 end
 % 右辺ベクトルbの用意
 b = ones(N, 1);
