@@ -8,7 +8,11 @@ Solver library for the standard shifted linear systems:
 * shifted MINRES method  
   for real symmetric / complex Hermitian matrix + real / complex shifts
 
+## 更新履歴
+2025/06/03: shifted CG法にseed switchingを実装
 
 ## TODO
-* shifted CG法にseed switchingを実装する
 * ドキュメントを作成する
+* もう少し大きい行列での動作の確認
+* sminresのGivens回転で自作関数を使用しているので他にないか探す
+* 高速化・最適化

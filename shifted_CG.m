@@ -1,10 +1,9 @@
 %
 % shifted CG method by MATLAB
 % First update : 2024/12/12
-% Last update  : 2024/12/13
+% Last update  : 2025/06/03
 % Created by "ShunHidaka (https://github.com/ShunHidaka)"
-% 実数向けに作成、複素数用ではない
-% SEED SWITCHINGが未実装
+% 実数向けに作成、複素数でも動く
 % 引数：
 %   行列A, 右辺ベクトルrhs, 行列サイズN,
 % 　シフトsigma, シフト数M,
@@ -42,7 +41,7 @@ function [x, flag, rres, itrs] = shifted_CG(A, rhs, N, sigma, M, max_itr, thresh
     r0nrm = norm(rhs);
     % メインループ
     conv_num = 0;
-    s = 2;
+    s = 1;
     rr(2) = dot(r(:,s),r(:,s));
     for j = 1:1:max_itr
         % seed方程式の更新
@@ -83,11 +82,27 @@ function [x, flag, rres, itrs] = shifted_CG(A, rhs, N, sigma, M, max_itr, thresh
             itrs(s) = j;
             conv_num = conv_num + 1;
         end
-        % seed switching
-
         % 全ての方程式が収束したかの判定
         if conv_num == M
             flag = 0;
             break;
         end
+        % seed switching
+        if is_conv(s) ~= 0
+            t = s;
+            for m = 1:1:M
+                if rres(m) > rres(t) && m ~= s
+                    t = m;
+                end
+            end
+            beta(t) = (pi(1,t)/pi(2,t))*(pi(1,t)/pi(2,t))*beta(s);
+            for m = 1:1:M
+                if m == t, continue; end
+                pi(1,t) = pi(1,t) / pi(1,t);
+                pi(2,t) = pi(2,t) / pi(2,t);
+            end
+            %fprintf(1, '# SWITCH [%d] to [%d] in %d : %f %f\n', s, t, j, rres(s), rres(t));
+            s = t;
+        end
+    end
     end
