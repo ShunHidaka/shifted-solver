@@ -21,8 +21,29 @@ threshold = 1e-13;        % 閾値の設定（現在の残差/初期残差 < thr
 [x_my_mr, flag_my_mr, relres_my_mr, iter_my_mr] = shifted_MINRES(A, b, N, sigma, 1, max_itr, threshold);
 
 % 結果の比較
+% 絶対誤差
 % (標準関数の解 - 自作関数の解)で全ての要素の差が
-% tolerance 以下なら true(1) が、以上なら false (0) が返る
-tolerance = 1e-12;
-all(abs(x_cg - x_my_cg) < tolerance)
-all(abs(x_mr - x_my_mr) < tolerance)
+% tolerance_abs 以下なら true(1) が、以上なら false (0) が返る
+tolerance_abs = 1e-12;
+if all(abs(x_cg - x_my_cg) < tolerance_abs)
+    disp('Absolute error for CG method is within tolerance.');
+else
+    disp('Absolute error for CG method exceeds tolerance.');
+end
+if all(abs(x_mr - x_my_mr) < tolerance_abs)
+    disp('Absolute error for MINRES method is within tolerance.');
+else
+    disp('Absolute error for MINRES method exceeds tolerance.');
+end
+% 相対誤差
+tolerance_rel = 1e-10;
+if norm(x_cg - x_my_cg)/norm(x_cg) < tolerance_rel
+    disp('Relative error for CG method is within tolerance.');
+else
+    disp('Relative error for CG method exceeds tolerance.');
+end
+if norm(x_mr - x_my_mr)/norm(x_mr) < tolerance_rel
+    disp('Relative error for MINRES method is within tolerance.');
+else
+    disp('Relative error for MINRES method exceeds tolerance.');
+end
